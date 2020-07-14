@@ -1,4 +1,5 @@
 import 'package:cars_database/src/models/brand_model.dart';
+import 'package:cars_database/src/models/car_model.dart';
 import 'package:cars_database/src/providers/models_provider.dart';
 import 'package:flutter/material.dart';
 
@@ -39,7 +40,7 @@ class ModelsPage extends StatelessWidget {
                 else {
                   return ListView.builder(
                     itemCount: snapshot.data.length,
-                    itemBuilder: (context, index) => _createItem(context, snapshot.data[index]),
+                    itemBuilder: (context, index) => _createItem(context, snapshot.data[index], brand),
                   );
                 }
               }
@@ -55,50 +56,59 @@ class ModelsPage extends StatelessWidget {
     );
   }
 
-  Widget _createItem(BuildContext context, data) {
-    return GestureDetector(
-      child: Container(
-        margin: EdgeInsets.all(10.0),
-        decoration: BoxDecoration(
-          color: Colors.white,
+  Widget _createItem(BuildContext context, data, BrandModel brand) {
+    return Container(
+      margin: EdgeInsets.all(10.0),
+      child: Material(
+        borderRadius: BorderRadius.circular(5.0),
+        elevation: 5.0,
+        child: InkWell(
           borderRadius: BorderRadius.circular(5.0),
-          boxShadow: <BoxShadow>[
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.5),
-              spreadRadius: 5,
-              blurRadius: 7,
-              offset: Offset(0, 3),
-            )
-          ]
-        ),
-        child: Row(
-          children: <Widget>[
-            ClipRRect(
-              borderRadius: BorderRadius.circular(5.0),
-              child: Container(
-                padding: EdgeInsets.only(right: 30.0),
-                child: Hero(
-                  tag: data.id,
-                  child: FadeInImage(
-                    placeholder: AssetImage('assets/loading.gif'), 
-                    image: NetworkImage(data.picture),
-                    height: 100.0,
-                    fit: BoxFit.contain,
+          child: Container(
+            child: Row(
+              children: <Widget>[
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(5.0),
+                  child: Container(
+                    padding: EdgeInsets.only(right: 30.0),
+                    child: Hero(
+                      tag: data.id,
+                      child: FadeInImage(
+                        placeholder: AssetImage('assets/loading.gif'), 
+                        image: NetworkImage(data.picture),
+                        height: 100.0,
+                        width: 150.0,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
                   ),
                 ),
-              ),
+                Text(
+                  data.name,
+                  style: TextStyle(
+                    fontSize: 15.0,
+                    fontWeight: FontWeight.bold
+                  ),
+                )
+              ],
             ),
-            Text(
-              data.name,
-              style: TextStyle(
-                fontSize: 15.0,
-                fontWeight: FontWeight.bold
-              ),
-            )
-          ],
+          ),
+          onTap: () => Navigator.pushNamed(context, 'versions', arguments: SendData(data, brand)),
         ),
       ),
-      onTap: () => Navigator.pushNamed(context, 'car', arguments: data),
     );
   }
+}
+
+class SendData {
+  CarModel _car;
+  BrandModel _brand;
+
+  SendData(car, brand) {
+    this._car = car;
+    this._brand = brand;
+  }
+
+  get car => _car;
+  get brand => _brand;
 }

@@ -1,4 +1,5 @@
 import 'package:cars_database/src/pages/car_page.dart';
+import 'package:cars_database/src/pages/versions_page.dart';
 import 'package:flutter/material.dart';
 
 import 'package:cars_database/src/pages/brands_page.dart';
@@ -18,7 +19,8 @@ class MyApp extends StatelessWidget {
 				'home': (BuildContext context) => HomePage(),
         'brands': (BuildContext context) => BrandsPage(),
         'models': (BuildContext context) => ModelsPage(),
-        'car': (BuildContext context) => CarPage()
+        'versions': (BuildContext context) => VersionsPage(),
+        'car': (BuildContext context) => CarPage(),
 			},
 		);
 	}
