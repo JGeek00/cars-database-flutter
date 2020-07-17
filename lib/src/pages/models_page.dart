@@ -14,6 +14,7 @@ class ModelsPage extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
           title: Text(brand.name),
+          centerTitle: true,
           leading: IconButton(
             icon: Icon(Icons.arrow_back), 
             onPressed: () {
@@ -74,7 +75,7 @@ class ModelsPage extends StatelessWidget {
                     child: Hero(
                       tag: data.id,
                       child: FadeInImage(
-                        placeholder: AssetImage('assets/loading.gif'), 
+                        placeholder: AssetImage('assets/no-picture.png'), 
                         image: NetworkImage(data.picture),
                         height: 100.0,
                         width: 150.0,

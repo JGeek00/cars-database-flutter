@@ -10,6 +10,7 @@ class BrandsPage extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
           title: Text('Marcas'),
+          centerTitle: true,
         ),
         body: FutureBuilder(
           future: brandsProvider.fetchBrands(),
@@ -56,7 +57,7 @@ class BrandsPage extends StatelessWidget {
                     child: Hero(
                       tag: data.id,
                       child: FadeInImage(
-                        placeholder: AssetImage('assets/loading.gif'), 
+                        placeholder: AssetImage('assets/no-picture.png'), 
                         image: NetworkImage(data.logo),
                         height: 50.0,
                         width: 100.0,

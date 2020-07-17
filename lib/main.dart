@@ -14,6 +14,25 @@ class MyApp extends StatelessWidget {
 		return MaterialApp(
 			title: 'Cars Database',
 			debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        primaryColor: Color.fromRGBO(0, 137, 123, 1),
+        accentColor: Color.fromRGBO(0, 137, 123, 1),
+        appBarTheme: AppBarTheme(
+          color: Colors.white,
+          textTheme: TextTheme(
+            headline6: TextStyle(
+              color: Colors.black,
+              fontSize: 20.0,
+              fontFamily: 'ProductSans',
+              fontWeight: FontWeight.bold
+            ),
+          ),
+          iconTheme: IconThemeData(
+            color: Colors.black
+          )
+        ),
+        fontFamily: 'ProductSans'
+      ),
 			initialRoute: 'home',
 			routes: {
 				'home': (BuildContext context) => HomePage(),

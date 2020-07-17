@@ -21,6 +21,6 @@ class VersionsProvider {
       });
     }
 
-    return [null, ...versionsList];
+    return versionsList;
   }
 }

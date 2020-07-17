@@ -1,3 +1,8 @@
+import 'dart:ui';
+
+import 'package:cars_database/src/models/brand_model.dart';
+import 'package:cars_database/src/models/car_model.dart';
+import 'package:cars_database/src/models/version_model.dart';
 import 'package:cars_database/src/providers/car_provider.dart';
 import 'package:cars_database/src/providers/versions_provider.dart';
 import 'package:flutter/material.dart';
@@ -29,51 +34,65 @@ class VersionsPage extends StatelessWidget {
       floating: false,
       pinned: true,
       snap: false,
-      title: Text(
-        "${data.brand.name} ${data.car.name}",
-      ),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       flexibleSpace: FlexibleSpaceBar(
-        background: Hero(
-          tag: data.car.id,
-          child: FadeInImage(
-            placeholder: AssetImage('assets/loading.gif'), 
-            image: NetworkImage(data.car.picture),
-            fadeInDuration: Duration(milliseconds: 150),
-            fit: BoxFit.cover,
+        title: Text(
+          "${data.brand.name} ${data.car.name}",
+          style: TextStyle(
+            color: Colors.black
           ),
+        ),
+        centerTitle: true,
+        collapseMode: CollapseMode.pin,
+        background: Column(
+          children: <Widget>[
+            Container(
+              height: 250.0,
+              width: double.infinity,
+              child: Hero(
+                tag: data.car.id,
+                child:FadeInImage(
+                  placeholder: AssetImage('assets/no-picture.png'), 
+                  image: NetworkImage(data.car.picture),
+                  fadeInDuration: Duration(milliseconds: 150),
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Widget _header(data) {
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: 20.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          FadeInImage(
-            placeholder: AssetImage('assets/loading.gif'), 
-            image: NetworkImage(data.brand.logo),
-            width: 100.0,
-            height: 50.0,
-            fit: BoxFit.contain,
-          ),
-          SizedBox(width: 10.0),
-          Container(
-            child: Text(
-              data.car.name,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 20.0
-              ),
-            ),
-          ),
-          SizedBox(width: 25.0),
-        ],
-      ),
-    );
-  }
+  // Widget _header(data) {
+  //   return Container(
+  //     padding: EdgeInsets.symmetric(vertical: 20.0),
+  //     child: Row(
+  //       mainAxisAlignment: MainAxisAlignment.center,
+  //       children: <Widget>[
+  //         FadeInImage(
+  //           placeholder: AssetImage('assets/loading.gif'), 
+  //           image: NetworkImage(data.brand.logo),
+  //           width: 100.0,
+  //           height: 50.0,
+  //           fit: BoxFit.contain,
+  //         ),
+  //         SizedBox(width: 10.0),
+  //         Container(
+  //           child: Text(
+  //             data.car.name,
+  //             style: TextStyle(
+  //               fontWeight: FontWeight.bold,
+  //               fontSize: 20.0
+  //             ),
+  //           ),
+  //         ),
+  //         SizedBox(width: 25.0),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   Widget _versions(data) {
     return Container(
@@ -99,14 +118,7 @@ class VersionsPage extends StatelessWidget {
             else {
               return SliverList(
                 delegate: SliverChildBuilderDelegate(
-                  (context, index) {
-                    if (index == 0) {
-                      return _header(data);
-                    }
-                    else {
-                      return _createItem(context, snapshot.data[index]);
-                    }
-                  },
+                  (context, index) => _createItem(context, snapshot.data[index], data),
                   childCount: snapshot.data.length,
                 ),
               );
@@ -131,7 +143,7 @@ class VersionsPage extends StatelessWidget {
     );
   }
 
-  Widget _createItem(BuildContext context, data) {
+  Widget _createItem(BuildContext context, data, generalData) {
     return Container(
       margin: EdgeInsets.all(10.0),
       child: Material(
@@ -148,11 +160,10 @@ class VersionsPage extends StatelessWidget {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(5.0),
                     child: Container(
-                      
                       child: Hero(
                         tag: data.id,
                         child: FadeInImage(
-                          placeholder: AssetImage('assets/loading.gif'), 
+                          placeholder: AssetImage('assets/no-picture.png'), 
                           image: NetworkImage(data.picture),
                           width: 150.0,
                           height: 100.0,
@@ -190,9 +201,25 @@ class VersionsPage extends StatelessWidget {
               ],
             ),
           ),
-          onTap: () => Navigator.pushNamed(context, 'car'),
+          onTap: () => Navigator.pushNamed(context, 'car', arguments: SendData(generalData.car, generalData.brand, data)),
         ),
       ),
     );
   }
+}
+
+class SendData {
+  CarModel _car;
+  BrandModel _brand;
+  VersionModel _version;
+
+  SendData(car, brand, version) {
+    this._car = car;
+    this._brand = brand;
+    this._version = version;
+  }
+
+  get car => _car;
+  get brand => _brand;
+  get version => _version;
 }
