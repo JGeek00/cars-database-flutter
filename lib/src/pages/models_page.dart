@@ -15,6 +15,7 @@ class ModelsPage extends StatelessWidget {
         appBar: AppBar(
           title: Text(brand.name),
           centerTitle: true,
+          brightness: Brightness.light,
           leading: IconButton(
             icon: Icon(Icons.arrow_back), 
             onPressed: () {

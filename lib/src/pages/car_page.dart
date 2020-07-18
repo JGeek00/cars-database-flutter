@@ -7,197 +7,128 @@ class CarPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final car = ModalRoute.of(context).settings.arguments;
+    final data = ModalRoute.of(context).settings.arguments;
+
+    final width = MediaQuery.of(context).size.width;
     
     return Container(
       child: DefaultTabController(
         length: 2,
         child: Scaffold(
-          body: NestedScrollView(
-            headerSliverBuilder: (context, innerBoxIsScrolled) {
-              return[
-                _headingImage(context, car),
-              ];
-            },
-            body: _pageBody(car),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _headingImage(BuildContext context, data) {
-    return SliverAppBar(
-      elevation: 5.0,
-      expandedHeight: 300.0,
-      floating: false,
-      pinned: true,
-      snap: false,
-      // title: Text("${data.brand.name} ${data.car.name} ${data.version.model}"),
-      centerTitle: true,
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      flexibleSpace: FlexibleSpaceBar(
-        collapseMode: CollapseMode.pin,
-        background: Column(
-          children: <Widget>[
-            Container(
-              height: 250.0,
-              width: double.infinity,
-              child: Hero(
-                tag: data.version.id,
-                child: FadeInImage(
-                  placeholder: AssetImage('assets/loading.gif'), 
-                  image: NetworkImage(data.version.picture),
-                  fadeInDuration: Duration(milliseconds: 150),
-                  fit: BoxFit.cover,
+          appBar: AppBar(
+            title: _title(data),
+            centerTitle: true,
+            brightness: Brightness.light,
+            actions: <Widget>[
+              IconButton(
+                icon: Icon(Icons.star_border), 
+                onPressed: () {}
+              )
+            ],
+            bottom: TabBar(
+              labelColor: Theme.of(context).primaryColor,
+              indicatorColor: Colors.teal,
+              tabs: [
+                Tab(
+                  icon: Icon(Icons.info),
+                  text: 'General',
                 ),
-              ),
+                Tab(
+                  icon: Icon(CustomIcons.engine),
+                  text: 'Motores',
+                ),
+              ]
             ),
-          ],
+          ),
+          body: TabBarView(
+            children: [
+              _info(data, width),
+              _engines(data)
+            ]
+          )
         ),
       ),
-      bottom: TabBar(
-        labelColor: Theme.of(context).primaryColor,
-        indicatorColor: Colors.teal,
-        tabs: [
-          Tab(
-            icon: Icon(Icons.info),
-            text: 'General',
-          ),
-          Tab(
-            icon: Icon(CustomIcons.engine),
-            text: 'Motores',
-          ),
-        ]
-      ),
     );
   }
 
-  Widget _pageBody(data) {
-    return TabBarView(
-      children: [
-        _info(data),
-        _engines(data)
-      ]
-    );
+  Widget _title(data) {
+    return Text("${data.brand.name} ${data.car.name} ${data.version.model}");
   }
 
-  Widget _info(data) {
+  Widget _info(data, width) {
     return Container(
       child: ListView(
         children: <Widget>[
-          _topRow(data)
+          _picture(data, width),
+          _general(data),
+          _size(data)
         ],
       ),
     );
   }
 
-  Widget _topRow(data) {
+  Widget _picture(data, width) {
     return Container(
-      margin: EdgeInsets.symmetric(vertical: 15.0, horizontal: 10.0),
-      padding: EdgeInsets.all(10.0),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(5.0),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey,
-            offset: Offset(0.0, 1.0), //(x,y)
-            blurRadius: 6.0,
+      padding: EdgeInsets.all(15.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: <Widget>[
+          Hero(
+            tag: data.version.id,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(5.0),
+              child: FadeInImage(
+                placeholder: AssetImage('assets/no-picture.png'), 
+                image: NetworkImage(data.version.picture),
+                fit: BoxFit.contain,
+                width: width-30.0,
+              ),
+            ),
           ),
         ],
-        color: Colors.white
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
+    );
+  }
+
+  Widget _general(data) {
+    return Container(
+      padding: EdgeInsets.only(top: 30.0),
+      child: Column(
         children: <Widget>[
           Container(
-            child: Column(
+            padding: EdgeInsets.only(left: 15.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
-                Container(
-                  padding: EdgeInsets.only(bottom: 5.0),
-                  child: Text(
-                    'Marca',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15.0
-                    ),
+                Text(
+                  'Información del modelo',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18.0
                   ),
                 ),
-                Text(data.brand.name)
               ],
             ),
           ),
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.grey
-            ),
-            width: 1.0,
-            height: 30.0,
+          SizedBox(height: 15.0),
+          ListTile(
+            title: Text('Marca'),
+            trailing: Text(data.brand.name),
           ),
-          Container(
-            child: Column(
-              children: <Widget>[
-                Container(
-                  padding: EdgeInsets.only(bottom: 5.0),
-                  child: Text(
-                    'Modelo',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15.0
-                    ),
-                  ),
-                ),
-                Text(data.car.name)
-              ],
-            ),
+          Divider(),
+          ListTile(
+            title: Text('Modelo'),
+            trailing: Text(data.car.name),
           ),
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.grey
-            ),
-            width: 1.0,
-            height: 30.0,
+          Divider(),
+          ListTile(
+            title: Text('Carrocería'),
+            trailing: Text(data.version.bodywork),
           ),
-          Container(
-            child: Column(
-              children: <Widget>[
-                Container(
-                  padding: EdgeInsets.only(bottom: 5.0),
-                  child: Text(
-                    'Carrocería',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15.0
-                    ),
-                  ),
-                ),
-                Text(data.version.bodywork)
-              ],
-            ),
-          ),
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.grey
-            ),
-            width: 1.0,
-            height: 30.0,
-          ),
-          Container(
-            child: Column(
-              children: <Widget>[
-                Container(
-                  padding: EdgeInsets.only(bottom: 5.0),
-                  child: Text(
-                    'Año',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15.0
-                    ),
-                  ),
-                ),
-                Text(data.version.year.toString())
-              ],
-            ),
+          Divider(),
+          ListTile(
+            title: Text('Año'),
+            trailing: Text(data.version.year.toString()),
           ),
         ],
       ),
@@ -205,111 +136,44 @@ class CarPage extends StatelessWidget {
   }
 
   Widget _size(data) {
-        return Container(
-      margin: EdgeInsets.symmetric(vertical: 15.0, horizontal: 10.0),
-      padding: EdgeInsets.all(10.0),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(5.0),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey,
-            offset: Offset(0.0, 1.0), //(x,y)
-            blurRadius: 6.0,
-          ),
-        ],
-        color: Colors.white
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
+    return Container(
+      padding: EdgeInsets.only(top: 40.0),
+      child: Column(
         children: <Widget>[
           Container(
-            child: Column(
+            padding: EdgeInsets.only(left: 15.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
-                Container(
-                  padding: EdgeInsets.only(bottom: 5.0),
-                  child: Text(
-                    'Ancho',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15.0
-                    ),
+                Text(
+                  'Tamaño y peso',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18.0
                   ),
                 ),
-                Text("${data.version.width} m")
               ],
             ),
           ),
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.grey
-            ),
-            width: 1.0,
-            height: 30.0,
+          SizedBox(height: 15.0),
+          ListTile(
+            title: Text('Anchura'),
+            trailing: Text("${data.version.width.toString()} m"),
           ),
-          Container(
-            child: Column(
-              children: <Widget>[
-                Container(
-                  padding: EdgeInsets.only(bottom: 5.0),
-                  child: Text(
-                    'Largo',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15.0
-                    ),
-                  ),
-                ),
-                Text("${data.version.length} m")
-              ],
-            ),
+          Divider(),
+          ListTile(
+            title: Text('Altura'),
+            trailing: Text("${data.version.height.toString()} m"),
           ),
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.grey
-            ),
-            width: 1.0,
-            height: 30.0,
+          Divider(),
+          ListTile(
+            title: Text('Longitud'),
+            trailing: Text("${data.version.length.toString()} m"),
           ),
-          Container(
-            child: Column(
-              children: <Widget>[
-                Container(
-                  padding: EdgeInsets.only(bottom: 5.0),
-                  child: Text(
-                    'Alto',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15.0
-                    ),
-                  ),
-                ),
-                Text("${data.version.height} m")
-              ],
-            ),
-          ),
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.grey
-            ),
-            width: 1.0,
-            height: 30.0,
-          ),
-          Container(
-            child: Column(
-              children: <Widget>[
-                Container(
-                  padding: EdgeInsets.only(bottom: 5.0),
-                  child: Text(
-                    'Peso',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15.0
-                    ),
-                  ),
-                ),
-                Text("${data.version.weight} Kg")
-              ],
-            ),
+          Divider(),
+          ListTile(
+            title: Text('Peso'),
+            trailing: Text("${data.version.weight.toString()} Kg"),
           ),
         ],
       ),
@@ -366,55 +230,79 @@ class CarPage extends StatelessWidget {
       context: context,
       barrierDismissible: true,
       builder: (context) {
-        return AlertDialog(
-          title: Text(engine.name),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              ListTile(
-                title: Text('Combustible'),
-                trailing: Text("${engine.fuel}"),
-              ),
-              Divider(),
-              ListTile(
-                title: Text('Potencia'),
-                trailing: Text("${engine.power.toString()} CV"),
-              ),
-              Divider(),
-              ListTile(
-                title: Text('Par motor'),
-                trailing: Text("${engine.torque.toString()} nm"),
-              ),
-              Divider(),
-              ListTile(
-                title: Text('Consumo'),
-                trailing: Text("${engine.consumption.toString()} L/100 Km"),
-              ),
-              Divider(),
-              ListTile(
-                title: Text('Caja de cambios'),
-                trailing: Text("${engine.gearboxType}"),
-              ),
-              Divider(),
-              ListTile(
-                title: Text('Nº de velocidades'),
-                trailing: Text("${engine.gearboxGears}"),
-              ),
-            ],
-          ),
-          actions: <Widget>[
-            FlatButton(
-              child: Text(
-                "Cerrar",
-                style: TextStyle(
-                  color: Theme.of(context).primaryColor
-                ),
-              ),
-              onPressed: () => Navigator.of(context).pop(),
-            ),
-          ],
+        return Dialog(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(5.0),
+          ),
+          child: Container(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Container(
+                  padding: EdgeInsets.only(top: 20.0, bottom: 10.0),
+                  child: Text(
+                    engine.name,
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20.0
+                    ),
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 10.0),
+                  child: Column(
+                    children: <Widget>[
+                      ListTile(
+                        title: Text('Combustible'),
+                        trailing: Text("${engine.fuel}"),
+                      ),
+                      Divider(),
+                      ListTile(
+                        title: Text('Potencia'),
+                        trailing: Text("${engine.power.toString()} CV"),
+                      ),
+                      Divider(),
+                      ListTile(
+                        title: Text('Par motor'),
+                        trailing: Text("${engine.torque.toString()} nm"),
+                      ),
+                      Divider(),
+                      ListTile(
+                        title: Text('Consumo'),
+                        trailing: Text("${engine.consumption.toString()} L/100 Km"),
+                      ),
+                      Divider(),
+                      ListTile(
+                        title: Text('Caja de cambios'),
+                        trailing: Text("${engine.gearboxType}"),
+                      ),
+                      Divider(),
+                      ListTile(
+                        title: Text('Nº de velocidades'),
+                        trailing: Text("${engine.gearboxGears}"),
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.only(top: 10.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: <Widget>[
+                      FlatButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: Text(
+                          'Cerrar',
+                          style: TextStyle(
+                            color: Theme.of(context).primaryColor
+                          ),
+                        )
+                      )
+                    ],
+                  ),
+                )
+              ],
+            ),
           ),
         );
       }

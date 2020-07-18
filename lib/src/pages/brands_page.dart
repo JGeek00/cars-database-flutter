@@ -11,6 +11,7 @@ class BrandsPage extends StatelessWidget {
         appBar: AppBar(
           title: Text('Marcas'),
           centerTitle: true,
+          brightness: Brightness.light,
         ),
         body: FutureBuilder(
           future: brandsProvider.fetchBrands(),

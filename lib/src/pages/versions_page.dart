@@ -15,19 +15,22 @@ class VersionsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final data = ModalRoute.of(context).settings.arguments;
 
+    final width = MediaQuery.of(context).size.width;
+    final height = MediaQuery.of(context).size.height;
+
     return Container(
       child: Scaffold(
         body: CustomScrollView(
           slivers: <Widget>[
-            _headingImage(context, data),
-            _versions(data)
+            _headingImage(context, data, height),
+            _versions(data, width),
           ],
         ),
       ),
     );
   }
 
-  Widget _headingImage(BuildContext context, data) {
+  Widget _headingImage(BuildContext context, data, height) {
     return SliverAppBar(
       elevation: 5.0,
       expandedHeight: 300.0,
@@ -35,6 +38,7 @@ class VersionsPage extends StatelessWidget {
       pinned: true,
       snap: false,
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      brightness: Brightness.light,
       flexibleSpace: FlexibleSpaceBar(
         title: Text(
           "${data.brand.name} ${data.car.name}",
@@ -47,7 +51,7 @@ class VersionsPage extends StatelessWidget {
         background: Column(
           children: <Widget>[
             Container(
-              height: 250.0,
+              height: height*0.3,
               width: double.infinity,
               child: Hero(
                 tag: data.car.id,
@@ -65,36 +69,7 @@ class VersionsPage extends StatelessWidget {
     );
   }
 
-  // Widget _header(data) {
-  //   return Container(
-  //     padding: EdgeInsets.symmetric(vertical: 20.0),
-  //     child: Row(
-  //       mainAxisAlignment: MainAxisAlignment.center,
-  //       children: <Widget>[
-  //         FadeInImage(
-  //           placeholder: AssetImage('assets/loading.gif'), 
-  //           image: NetworkImage(data.brand.logo),
-  //           width: 100.0,
-  //           height: 50.0,
-  //           fit: BoxFit.contain,
-  //         ),
-  //         SizedBox(width: 10.0),
-  //         Container(
-  //           child: Text(
-  //             data.car.name,
-  //             style: TextStyle(
-  //               fontWeight: FontWeight.bold,
-  //               fontSize: 20.0
-  //             ),
-  //           ),
-  //         ),
-  //         SizedBox(width: 25.0),
-  //       ],
-  //     ),
-  //   );
-  // }
-
-  Widget _versions(data) {
+  Widget _versions(data, width) {
     return Container(
       child: FutureBuilder(
         future: versionsProvider.fetchVersions(data.brand.id, data.car.id),
@@ -118,8 +93,15 @@ class VersionsPage extends StatelessWidget {
             else {
               return SliverList(
                 delegate: SliverChildBuilderDelegate(
-                  (context, index) => _createItem(context, snapshot.data[index], data),
-                  childCount: snapshot.data.length,
+                  (context, index) {
+                    if (index == snapshot.data.length) {
+                      return SizedBox(height: 15.0);
+                    }
+                    else {
+                      return _createItem(context, snapshot.data[index], data, width);
+                    }
+                  },
+                  childCount: snapshot.data.length+1,
                 ),
               );
             }
@@ -143,7 +125,7 @@ class VersionsPage extends StatelessWidget {
     );
   }
 
-  Widget _createItem(BuildContext context, data, generalData) {
+  Widget _createItem(BuildContext context, data, generalData, width) {
     return Container(
       margin: EdgeInsets.all(10.0),
       child: Material(
@@ -158,7 +140,7 @@ class VersionsPage extends StatelessWidget {
                 Container(
                   width: 150.0,
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(5.0),
+                    borderRadius: BorderRadius.only(bottomLeft: Radius.circular(5.0), topLeft: Radius.circular(5.0)),
                     child: Container(
                       child: Hero(
                         tag: data.id,
@@ -174,8 +156,7 @@ class VersionsPage extends StatelessWidget {
                   ),
                 ),
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 10.0),
-                  width: 250.0,
+                  width: width-170.0,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
